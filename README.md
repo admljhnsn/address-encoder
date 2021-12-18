@@ -5,6 +5,10 @@ Text-format addresses are decoded into their native binary representations, and 
 
 This library was written for use with [EIP 2304](https://eips.ethereum.org/EIPS/eip-2304), but may be useful for anyone looking for a general purpose cryptocurrency address codec.
 
+EVM compatible chains are either specified using SLIP44 coinType or `0x800000000 | chainId` where 0x800000000 is msb (most significant bit) reserved at SLIP44 and no coin types exist in that range. This is to avoid number colision with th existing coin types.
+
+For example, cointype of ARB1 is 2147441487(`0x80000000 | 42161`).
+
 ## Installation
 
 ### Using NPM
@@ -35,6 +39,7 @@ This library currently supports the following cryptocurrencies and address forma
  - AION (hex)
  - ALGO (checksummed-base32)
  - AR (base64url)
+ - ARB1 (checksummed-hex)
  - ARDR
  - ARK (base58check)
  - ATOM (bech32)
@@ -45,6 +50,7 @@ This library currently supports the following cryptocurrencies and address forma
  - BDX (base58xmr)
  - BNB (bech32)
  - BPS (base58check P2PKH and P2SH)
+ - BSC (checksummed-hex)
  - BSV (base58check)
  - BTC (base58check P2PKH and P2SH, and bech32 segwit)
  - BTG (base58check P2PKH and P2SH, and bech32 segwit)
@@ -72,6 +78,7 @@ This library currently supports the following cryptocurrencies and address forma
  - FIO (base58 + ripemd160-checksum)
  - FIRO (base58check P2PKH and P2SH)
  - FLOW (hex)
+ - FTM (checksummed-hex)
  - GO (checksummed-hex)
  - GRIN (base58check)
  - GRS (base58check P2PKH and P2SH, and bech32 segwit)
@@ -88,14 +95,16 @@ This library currently supports the following cryptocurrencies and address forma
  - KAVA (bech32)
  - KMD (base58check)
  - KSM (ss58)
+ - LCC (base58check P2PKH and P2SH, and bech32 segwit)
  - LRG (base58check P2PKH and P2SH)
  - LSK (hex with suffix)
  - LTC (base58check P2PHK and P2SH, and bech32 segwit)
  - LUNA (bech32)
+ - MATIC (checksummed-hex)
  - MONA (base58check P2PKH and P2SH, and bech32 segwit)
  - NANO (nano-base32)
  - NAS(base58 + sha3-256-checksum)
- - NEAR 
+ - NEAR
  - NEM(XEM) (base32)
  - NEO (base58check)
  - NMC (base58check)
@@ -103,6 +112,7 @@ This library currently supports the following cryptocurrencies and address forma
  - NULS (base58)
  - ONE (bech32)
  - ONT (base58check)
+ - OPT (checksummed-hex)
  - POA (checksummed-hex)
  - PPC (base58check P2PKH and P2SH)
  - QTUM (base58check)
@@ -116,6 +126,7 @@ This library currently supports the following cryptocurrencies and address forma
  - SRM (base58, no check)
  - STEEM (base58 + ripemd160-checksum)
  - STRAT (base58check P2PKH and P2SH)
+ - STX (crockford base32 P2PKH and P2SH + ripemd160-checksum)
  - SYS (base58check P2PKH and P2SH, and bech32 segwit)
  - TFUEL (checksummed-hex)
  - THETA (base58check)
@@ -129,6 +140,7 @@ This library currently supports the following cryptocurrencies and address forma
  - WAN (checksummed-hex)
  - WAVES (base58)
  - WICC (base58check P2PKH and P2SH)
+ - XCH (bech32m)
  - XDAI (checksummed-hex)
  - XHV (base58xmr)
  - XLM (ed25519 public key)
@@ -140,7 +152,7 @@ This library currently supports the following cryptocurrencies and address forma
  - ZEL (transparent addresses: base58check P2PKH and P2SH, and Sapling shielded payment addresses: bech32; doesn't support Sprout shielded payment addresses)
  - ZEN (base58 check)
  - ZIL (bech32)
- 
+
 
 ## Development guide
 
@@ -171,4 +183,3 @@ This library will be used in many mobile wallets where size bloat impacts the pe
 ## Validate address format, not just encode/decode
 
 Some specifications simply use base58 encoding without specific checksum. However, if there are any extra address format (such as address prefix or address length) exists, please also add that check so that we can prevent users from adding wrong coin address.
-
