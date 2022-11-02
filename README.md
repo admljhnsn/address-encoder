@@ -44,6 +44,7 @@ This library currently supports the following cryptocurrencies and address forma
  - ARK (base58check)
  - ATOM (bech32)
  - AVAX (bech32)
+ - AVAXC (checksummed-hex)
  - BCD (base58check P2PKH and P2SH, and bech32 segwit)
  - BCH (base58check and cashAddr; decodes to cashAddr)
  - BCN (base58xmr)
@@ -61,6 +62,7 @@ This library currently supports the following cryptocurrencies and address forma
  - CELO (checksummed-hex)
  - CKB (bech32)
  - CLO (checksummed-hex)
+ - CRO (checksummed-hex)
  - DASH (base58check P2PKH and P2SH)
  - DCR (base58, no check)
  - DGB (base58check P2PKH and P2SH, and bech32 segwit)
@@ -102,6 +104,7 @@ This library currently supports the following cryptocurrencies and address forma
  - LUNA (bech32)
  - MATIC (checksummed-hex)
  - MONA (base58check P2PKH and P2SH, and bech32 segwit)
+ - MRX (base58check)
  - NANO (nano-base32)
  - NAS(base58 + sha3-256-checksum)
  - NEAR
@@ -112,7 +115,7 @@ This library currently supports the following cryptocurrencies and address forma
  - NULS (base58)
  - ONE (bech32)
  - ONT (base58check)
- - OPT (checksummed-hex)
+ - OP (checksummed-hex)
  - POA (checksummed-hex)
  - PPC (base58check P2PKH and P2SH)
  - QTUM (base58check)
@@ -166,7 +169,7 @@ In either case, please follow the following guides and best practices.
 
 When we review your pull request, we conduct the following checks.
 
-- The cointype correctly came from [SLIP 44 ](https://github.com/satoshilabs/slips/blob/master/slip-0044.md). If you don't find your coin in the list, raise PR to add it ([example](https://github.com/satoshilabs/slips/pull/1024))
+- The cointype correctly came from [SLIP 44 ](https://github.com/satoshilabs/slips/blob/master/slip-0044.md) (unless you add EVM chains). If you don't find your coin in the list, raise PR to add it ([example](https://github.com/satoshilabs/slips/pull/1024))
 - Check coin address from block explorer and compare that the test addresses are in a similar format
 - Read the reference code to see the pull request matches with the specification.
 

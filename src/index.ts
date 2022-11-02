@@ -310,6 +310,18 @@ const cardanoChain = (
   name,
 });
 
+function makeAvaxDecoder (hrp: string): (data: string) => Buffer {
+  const decodeBech32 = makeBech32Decoder(hrp)
+  return (data: string) => {
+    let address
+    const [id, possibleAddr] = data.split('-')
+    if (!possibleAddr) { address = id }
+    else { address = possibleAddr }
+
+    return decodeBech32(address)
+  }
+}
+
 function decodeNearAddr(data: string): Buffer {
   const regex = /(^(([a-z\d]+[\-_])*[a-z\d]+\.)*([a-z\d]+[\-_])*[a-z\d]+$)/g;
   if(!regex.test(data)) {
@@ -489,6 +501,11 @@ const hexChecksumChain = (name: string, coinType: number, chainId?: number) => (
 /* tslint:disable:no-bitwise */
 export const convertEVMChainIdToCoinType = (chainId: number) =>{
   return  (SLIP44_MSB | chainId) >>> 0
+}
+
+/* tslint:disable:no-bitwise */
+export const convertCoinTypeToEVMChainId = (coinType: number) =>{
+  return  ((SLIP44_MSB -1) & coinType) >> 0
 }
 
 const evmChain = (name: string, coinType: number) => ({
@@ -1440,7 +1457,7 @@ export const formats: IFormat[] = [
   bitcoinBase58Chain('AIB', 55, [[0x17]], [[0x05]]),
   bitcoinChain('SYS', 57, 'sys', [[0x3f]], [[0x05]]),
   hexChecksumChain('ETH', 60),
-  hexChecksumChain('ETC', 61),
+  hexChecksumChain('ETC_LEGACY', 61),
   getConfig('ICX', 74, icxAddressEncoder, icxAddressDecoder),
   bitcoinBase58Chain('XVG',77, [[0x1E]], [[0x21]]),
   bitcoinBase58Chain('STRAT', 105, [[0x3F]], [[0x7D]]),
@@ -1463,7 +1480,7 @@ export const formats: IFormat[] = [
   bitcoinChain('BTG', 156, 'btg', [[0x26]], [[0x17]]),
   getConfig('NANO', 165, nanoAddressEncoder, nanoAddressDecoder),
   bitcoinBase58Chain('RVN', 175, [[0x3c]], [[0x7a]]),
-  hexChecksumChain('POA', 178),
+  hexChecksumChain('POA_LEGACY', 178),
   bitcoinChain('LCC', 192, 'lcc', [[0x1c]], [[0x32], [0x05]]),
   eosioChain('EOS', 194, 'EOS'),
   getConfig('TRX', 195, bs58Encode, bs58Decode),
@@ -1472,13 +1489,14 @@ export const formats: IFormat[] = [
   getConfig('BSV', 236, bsvAddresEncoder, bsvAddressDecoder),
   getConfig('NEO', 239, bs58Encode, bs58Decode),
   getConfig('NIM', 242, nimqEncoder, nimqDecoder),
-  hexChecksumChain('EWT', 246),
+  hexChecksumChain('EWT_LEGACY', 246),
   getConfig('ALGO', 283, algoEncode, algoDecode),
   getConfig('IOST', 291, bs58EncodeNoCheck, bs58DecodeNoCheck),
   bitcoinBase58Chain('DIVI', 301, [[0x1e]], [[0xd]]),
   bech32Chain('IOTX', 304, 'io'),
   eosioChain('BTS', 308, 'BTS'),
   bech32Chain('CKB', 309, 'ckb'),
+  getConfig('MRX', 326, bs58Encode, bs58Decode),
   bech32Chain('LUNA', 330, 'terra'),
   getConfig('DOT', 354, dotAddrEncoder, ksmAddrDecoder),
   getConfig('VSYS', 360, vsysAddressEncoder, vsysAddressDecoder),
@@ -1492,7 +1510,7 @@ export const formats: IFormat[] = [
   getConfig('FIL', 461, filAddrEncoder, filAddrDecoder),
   getConfig('AR', 472, arAddressEncoder, arAddressDecoder),
   bitcoinBase58Chain('CCA', 489, [[0x0b]], [[0x05]]),
-  hexChecksumChain('THETA', 500),
+  hexChecksumChain('THETA_LEGACY', 500),
   getConfig('SOL', 501, bs58EncodeNoCheck, bs58DecodeNoCheck),
   getConfig('XHV', 535, xmrAddressEncoder, xmrAddressDecoder),
   getConfig('FLOW', 539, flowEncode, flowDecode),
@@ -1506,18 +1524,18 @@ export const formats: IFormat[] = [
   bitcoinBase58Chain('BPS', 576, [[0x00]], [[0x05]]),
   hexChecksumChain('TFUEL', 589),
   bech32Chain('GRIN', 592, 'grin'),
-  hexChecksumChain('OPT', 614),
-  hexChecksumChain('XDAI', 700),
+  hexChecksumChain('XDAI_LEGACY', 700),
+  // VET uses same address format as Ethereum but it's not EVM chain and no chainId found on https://chainlist.org
   hexChecksumChain('VET', 703),
   bech32Chain('BNB', 714, 'bnb'),
-  hexChecksumChain('CLO', 820),
+  hexChecksumChain('CLO_LEGACY', 820),
   eosioChain('HIVE', 825, 'STM'),
-  hexChecksumChain('TOMO', 889),
+  hexChecksumChain('TOMO_LEGACY', 889),
   getConfig('HNT', 904, hntAddresEncoder, hntAddressDecoder),
   bech32Chain('RUNE', 931, 'thor'),
   bitcoinChain('BCD', 999, 'bcd', [[0x00]], [[0x05]]),
-  hexChecksumChain('TT', 1001),
-  hexChecksumChain('FTM', 1007),
+  hexChecksumChain('TT_LEGACY', 1001),
+  hexChecksumChain('FTM_LEGACY', 1007),
   bech32Chain('ONE', 1023, 'one'),
   getConfig('ONT', 1024, ontAddrEncoder, ontAddrDecoder),
   {
@@ -1541,21 +1559,36 @@ export const formats: IFormat[] = [
   iotaBech32Chain('IOTA', 4218, 'iota'),
   getConfig('HNS', 5353, hnsAddressEncoder, hnsAddressDecoder),
   getConfig('STX', 5757, c32checkEncode, c32checkDecode),
-  hexChecksumChain('GO', 6060),
+  hexChecksumChain('GO_LEGACY', 6060),
   bech32mChain('XCH', 8444, 'xch', 90),
   getConfig('NULS', 8964, nulsAddressEncoder, nulsAddressDecoder),
-  bech32Chain('AVAX', 9000, 'avax'),
-  hexChecksumChain('NRG', 9797),
+  getConfig('AVAX', 9000, makeBech32Encoder('avax'), makeAvaxDecoder('avax')),
+  hexChecksumChain('NRG_LEGACY', 9797),
   getConfig('ARDR', 16754, ardrAddressEncoder, ardrAddressDecoder),
   zcashChain('ZEL', 19167, 'za', [[0x1c, 0xb8]], [[0x1c, 0xbd]]),
-  hexChecksumChain('CELO', 52752),
+  hexChecksumChain('CELO_LEGACY', 52752),
   bitcoinBase58Chain('WICC', 99999, [[0x49]], [[0x33]]),
   getConfig('WAN', 5718350, wanChecksummedHexEncoder, wanChecksummedHexDecoder),
   getConfig('WAVES', 5741564, bs58EncodeNoCheck, wavesAddressDecoder),
   // EVM chainIds
+  evmChain('OP', 10),
+  evmChain('CRO', 25),
   evmChain('BSC', 56),
+  evmChain('GO', 60),
+  evmChain('ETC', 61),
+  evmChain('TOMO', 88),
+  evmChain('POA', 99),
+  evmChain('XDAI', 100),
+  evmChain('TT', 108),
   evmChain('MATIC', 137),
-  evmChain('ARB1', 42161)
+  evmChain('EWT', 246),
+  evmChain('FTM', 250),
+  evmChain('THETA', 361),
+  evmChain('CLO', 820),
+  evmChain('NRG', 39797),
+  evmChain('ARB1', 42161),
+  evmChain('CELO', 42220),
+  evmChain('AVAXC', 43114)
 ];
 
 export const formatsByName: { [key: string]: IFormat } = Object.assign({}, ...formats.map(x => ({ [x.name]: x })));
